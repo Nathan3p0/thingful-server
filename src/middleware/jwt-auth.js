@@ -13,7 +13,7 @@ const requireAuth = (req, res, next) => {
         const payload = AuthService.verifyJWT(bearerToken)
 
         AuthService.getUserWithUserName(
-            req.app.get('db'), payload.subject
+            req.app.get('db'), payload.sub
         )
             .then(user => {
                 if (!user) {
