@@ -11,9 +11,9 @@ authRouter.post('/login', jsonBodyParser, (req, res, next) => {
         password
     }
 
-    for(const [key,value] of Object.entries(loginUser)) {
-        if (value == null) {
-            return res.status(400).json({ error : 'Missing username or password'})
+    for (const [key, value] of Object.entries(loginUser)) {
+        if (value == '') {
+            return res.status(400).json({ error: 'Missing username or password' })
         }
     }
 
@@ -21,24 +21,24 @@ authRouter.post('/login', jsonBodyParser, (req, res, next) => {
         .then(user => {
             if (!user) {
                 return res.status(400).json({ error: 'Invalid Username' })
-              }
+            }
             return bcrypt.compare(loginUser.password, user.password)
-            .then(passwordsMatch => {
-            if (!passwordsMatch) {
-                return res.status(400).json({ error: 'Incorrect Password'})
-            }
-    
-            const subject = user.user_name
-            const payload = {
-                user_id : user.user_id
-            }
+                .then(passwordsMatch => {
+                    if (!passwordsMatch) {
+                        return res.status(400).json({ error: 'Incorrect Password' })
+                    }
 
-            res.send({
-                authToken : AuthService.createJWT(subject, payload)
-            })
-            
+                    const subject = user.user_name
+                    const payload = {
+                        user_id: user.user_id
+                    }
 
-            });
+                    res.send({
+                        authToken: AuthService.createJWT(subject, payload)
+                    })
+
+
+                });
         })
 
 })
