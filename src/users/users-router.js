@@ -1,11 +1,12 @@
 const express = require('express')
 const UsersService = require('./users-service')
+const path = require('path')
 
 const usersRouter = express.Router()
 const jsonBodyParser = express.json()
 
 usersRouter.post('/', jsonBodyParser, (req, res, next) => {
-    const { password, user_name } = req.body
+    const { password, user_name, full_name, nickname } = req.body
     for (const field of ['user_name', 'full_name', 'password']) {
         if (!req.body[field]) {
             return res.status(400).json({
@@ -29,9 +30,23 @@ usersRouter.post('/', jsonBodyParser, (req, res, next) => {
                     error: 'You need to pick a different name Matey. That one is taken.'
                 })
             }
-            res.send('ok')
+            const newUser = {
+                user_name,
+                password,
+                full_name,
+                nickname,
+                date_created: 'now()'
+            }
+            return UsersService.insertUser(req.app.get('db'), newUser)
+                .then(user => {
+                    res.status(201)
+                        .location(path.posix.join(req.originalUrl, `/${user.id}`))
+                        .json({
+                            user
+                        })
+                }
+                )
+                .catch(next)
         })
-        .catch(next)
-})
 
-module.exports = usersRouter
+    module.exports = usersRouter
