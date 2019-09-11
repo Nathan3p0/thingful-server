@@ -43,10 +43,11 @@ usersRouter.post('/', jsonBodyParser, (req, res, next) => {
                         .location(path.posix.join(req.originalUrl, `/${user.id}`))
                         .json({
                             user
+                            // UsersService.serializeUser(user)
                         })
-                }
-                )
-                .catch(next)
+                })
         })
+        .catch(next)
+})
 
-    module.exports = usersRouter
+module.exports = usersRouter
